@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Register</title>
+<!-- Google Fonts for a clean look -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .container {
+    background: #fff;
+    padding: 40px;
+    max-width: 400px;
+    width: 90%;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+  }
+
+  .container:hover {
+    box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 24px;
+    color: #333;
+  }
+
+  /* Style form inputs */
+  input[type="text"],
+  input[type="password"],
+  input[type="email"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s;
+  }
+
+  input[type="text"]:focus,
+  input[type="password"]:focus,
+  input[type="email"]:focus {
+    border-color: #6c63ff;
+    outline: none;
+  }
+
+  /* Style submit button */
+  button {
+    width: 100%;
+    padding: 14px;
+    background-color: #6c63ff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+
+  button:hover {
+    background-color: #5750d8;
+    transform: translateY(-2px);
+  }
+
+  /* Message styling */
+  #message {
+    margin-top: 16px;
+    text-align: center;
+    font-weight: 600;
+  }
+ .buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  /* Responsive adjustments */
+  @media(max-width: 500px) {
+    body {
+      padding: 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Create an Account</h2>
+  <form id="registerForm" autocomplete="off">
+    <label for="username">Username</label>
+    <input type="text" id="username" placeholder="Enter a username" required />
+
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="Enter your email" required />
+
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="Enter a password" required />
+
+    <label for="confirm_password">Confirm Password</label>
+    <input type="password" id="confirm_password" placeholder="Confirm your password" required />
+
+    <label for="phone_number">Phone Number</label>
+    <input type="text" id="phone_number" placeholder="Enter phone number" />
+
+    <label for="address">Address</label>
+    <input type="text" id="address" placeholder="Enter address" />
+    <div class="buttons">
+
+        <button type="submit">Register</button>
+        <button type="button" id="loginBtn">Login</button>
+    </div>
+  </form>
+  <p id="message"></p>
+</div>
+
+<script>
+  document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const confirm_password = document.getElementById('confirm_password').value.trim();
+    const phone_number = document.getElementById('phone_number').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const msgEl = document.getElementById('message');
+
+    // Client-side validation for password match
+    if (password !== confirm_password) {
+      msgEl.innerText = 'Passwords do not match.';
+      msgEl.style.color = '#e74c3c'; // red
+      return;
+    }
+
+    // Get JWT token from localStorage
+    const accessToken = localStorage.getItem('access_token');
+
+    // Prepare headers
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    if (accessToken) {
+      headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+
+    // POST request to registration API
+    fetch('/api/register/', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({
+        username,
+        email,
+        password,
+        phone_number,
+        address,
+      }),
+    })
+    .then(res => {
+      // Check for 401 Unauthorized (invalid or expired token)
+      if (res.status === 401) {
+        throw new Error('Invalid or expired token. Please log in again.');
+      }
+      return res.json();
+    })
+    .then(data => {
+      if (data.success) {
+        msgEl.innerText = 'Registration successful! 🎉';
+        msgEl.style.color = '#2ecc71'; // green
+        // Redirect to login page after a delay
+        // setTimeout(() => {
+        //   window.location.href = '/login';
+        // }, 1500);
+      } else {
+        msgEl.innerText = data.error || 'Registration failed.';
+        msgEl.style.color = '#e74c3c'; // red
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      msgEl.innerText = error.message || 'An error occurred. Please try again.';
+      msgEl.style.color = '#e74c3c';
+      if (error.message.includes('token')) {
+        // Redirect to login if token is invalid
+        // setTimeout(() => {
+        //   window.location.href = '/login';
+        // }, 1500);
+      }
+    });
+  });
+ document.getElementById('loginBtn').addEventListener('click', function() {
+    window.location.href = '/login'; // change this to your registration page URL
+  });
+</script>
+
+</body>
+</html>

@@ -8,7 +8,8 @@ class Users(APIView):
 
     def login_view(request):
         return render(request, 'login.html')
-    
+    def register_view(request):
+        return render(request, 'register.html')
     def get(self, request):
         # Handle login logic
         # For JWT, typically you just call TokenObtainPairView

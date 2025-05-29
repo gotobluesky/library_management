@@ -1,9 +1,28 @@
+# books/admin.py
 from django.contrib import admin
-from .models import Book
+from django.contrib.auth.admin import UserAdmin
+from .models import User, Book
+
+class CustomUserAdmin(UserAdmin):
+    model = User
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'user_role')
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'user_role')
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'phone_number', 'address', 'user_role')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2', 'user_role')}
+        ),
+    )
+    search_fields = ('username', 'email')
+    ordering = ('username',)
 
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'ISBN', 'page_count', 'availability')  # use 'availability'
-    search_fields = ('title', 'author', 'ISBN')
-    list_filter = ('availability',)  # use 'availability' here as well
-  
+    list_display = ['title', 'isbn']  # Matches Book model fields
+
+admin.site.register(User, CustomUserAdmin)
 admin.site.register(Book, BookAdmin)

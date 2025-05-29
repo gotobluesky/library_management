@@ -1,0 +1,114 @@
+# 📚 Library Management System
+
+A full-stack library management API built using **Django**, **Django REST Framework**, and **JWT authentication**, with **PostgreSQL** as the database. Users can search for and borrow books, while admins can manage users and the collection. The application includes Swagger documentation, Docker support, and is ready for deployment on **Heroku**.
+
+---
+
+## 🚀 Features
+
+- 🔍 Search, filter, and paginate through books
+- 🔐 JWT-based user authentication and authorization
+- 📖 Registered users can borrow and return books
+- 🧑‍💼 Admin panel to manage users and books
+- 📚 Track borrowed books with timestamps
+- 🛡️ Secured against common web attacks (CSRF, SQLi, XSS)
+- 🧪 Full test coverage with unit and integration tests
+- 📦 Dockerized and Heroku-ready
+
+---
+
+## 👥 User Roles
+
+| Role         | Description                                  |
+|--------------|----------------------------------------------|
+| Anonymous    | Browse and search for books                  |
+| Registered   | Borrow and return books                      |
+| Admin        | Add/remove books, manage users               |
+
+---
+
+## 🧱 Tech Stack
+
+- **Backend**: Django, Django REST Framework
+- **Auth**: JWT (`djangorestframework-simplejwt`)
+- **Database**: PostgreSQL
+- **Testing**: Unittest / Pytest, Coverage
+- **Deployment**: Docker, Heroku
+- **Docs**: Swagger (`drf-yasg`)
+
+---
+
+
+---
+
+## ⚙️ Installation
+
+### 🔧 Prerequisites
+
+- Python 3.9+
+- PostgreSQL
+- Docker & Docker Compose (optional)
+- Git
+
+### 💻 Local Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/library-management.git
+cd library-management
+
+# Create a virtual environment
+python -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Create environment variables
+cp .env.example .env
+
+# Apply migrations
+python manage.py migrate
+
+# Create an admin user
+python manage.py createsuperuser
+
+# Run the development server
+python manage.py runserver
+```
+
+🐳 Docker Setup
+# Build and run with Docker Compose
+docker-compose up --build
+
+🔐 Authentication
+Login: POST /api/token/
+
+Refresh: POST /api/token/refresh/
+
+Use the JWT access token in Authorization: Bearer <token> header for all protected endpoints.
+
+
+🧪 Running Tests
+With Django test framework:
+
+python manage.py test
+
+pytest --cov=.
+
+
+📦 Environment Variables (.env.example)
+
+DEBUG=True
+SECRET_KEY=your-secret-key
+ALLOWED_HOSTS=localhost,127.0.0.1
+
+DB_NAME=your_db
+DB_USER=your_user
+DB_PASSWORD=your_password
+DB_HOST=localhost
+DB_PORT=5432
+
+
+
+
