@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login with JWT</title>
+<!-- Google Fonts for a clean look -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .container {
+    background: #fff;
+    padding: 40px;
+    max-width: 400px;
+    width: 90%;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+  }
+
+  .container:hover {
+    box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 24px;
+    color: #333;
+  }
+
+  /* Style form inputs */
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s;
+  }
+
+  input[type="text"]:focus,
+  input[type="password"]:focus {
+    border-color: #6c63ff;
+    outline: none;
+  }
+
+  /* Style submit button */
+  button {
+    width: 100%;
+    padding: 14px;
+    background-color: #6c63ff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+
+  button:hover {
+    background-color: #5750d8;
+    transform: translateY(-2px);
+  }
+
+  /* Message styling */
+  #message {
+    margin-top: 16px;
+    text-align: center;
+    font-weight: 600;
+    color: #333;
+  }
+
+  /* Responsive adjustments */
+  @media(max-width: 500px) {
+    body {
+      padding: 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Login to Your Account</h2>
+  <form id="loginForm" autocomplete="off">
+    <label for="username">Username</label>
+    <input type="text" id="username" placeholder="Enter your username" required />
+
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="Enter your password" required />
+
+    <button type="submit">Login</button>
+  </form>
+  <p id="message"></p>
+</div>
+
+<script>
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    fetch('/api/token/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    })
+    .then(res => res.json())
+    .then(data => {
+      const msgEl = document.getElementById('message');
+      if (data.access) {
+        localStorage.setItem('access_token', data.access);
+        localStorage.setItem('refresh_token', data.refresh);
+        msgEl.innerText = 'Login successful! 🎉';
+        msgEl.style.color = '#2ecc71'; // green
+        setTimeout(() => {
+            window.location.href = '/books'; // or your main page URL
+        }, 1000);
+        // You can redirect or load protected content here
+      } else {
+        msgEl.innerText = 'Invalid credentials. Please try again.';
+        msgEl.style.color = '#e74c3c'; // red
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      const msgEl = document.getElementById('message');
+      msgEl.innerText = 'An error occurred. Please try again.';
+      msgEl.style.color = '#e74c3c';
+    });
+  });
+</script>
+
+</body>
+</html>
